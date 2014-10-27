@@ -45,9 +45,23 @@ STOPOPTS="-a -s"
 test ! -r "$sysconfdir"/rc.d/init.d/functions ||
         . "$sysconfdir"/rc.d/init.d/functions
 
+# provide action() fallback
+if ! type action >/dev/null 2>&1; then
+    # Real basic fallback for sysvinit "action" verbage.
+    action() {
+	echo -n "$1     "
+	shift
+	"$@" && echo "OK" || echo "Failed"
+    }
+fi
+
+
 # Source any configurable options
 test ! -r "$sysconfdir"/sysconfig/lxc ||
         . "$sysconfdir"/sysconfig/lxc
+
+# Check for an existing "$localstatedir"/lock/subsys directory
+[ -d "$localstatedir"/lock/subsys/ ] || mkdir "$localstatedir"/lock/subsys/ || exit 1
 
 # Check for needed utility program
 [ -x "$bindir"/lxc-autostart ] || exit 1
