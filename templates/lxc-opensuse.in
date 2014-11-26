@@ -360,7 +360,9 @@ clean()
 usage()
 {
     cat <<EOF
-$1 -h|--help -p|--path=<path> --clean
+$1 -h|--help -p|--path=<path> -r|--release nn.n --clean
+Please give the release as 12.3, 13.1, 13.2 etc.
+If no release is given, openSUSE 12.3 is installed.
 EOF
     return 0
 }
