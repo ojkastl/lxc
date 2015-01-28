@@ -148,8 +148,34 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %clean
 %__rm -rf %{buildroot}
 
+%pre
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_add_pre lxc.service
+%endif
+
 %post
+/sbin/ldconfig
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_add_post lxc.service
+%endif
+
 %post   libs -p /sbin/ldconfig
+
+%preun
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_del_preun lxc.service
+%endif
+
+%postun
+# openSUSE/SUSE
+%if %{defined suse_version}
+/sbin/ldconfig
+%service_del_postun lxc.service
+%endif
+
 %postun libs -p /sbin/ldconfig
 
 %files
