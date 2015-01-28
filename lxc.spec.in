@@ -28,7 +28,16 @@
 %if 0%{?fedora} >= 14 || 0%{?rhel} >= 7 || 0%{?suse_version} >= 1210
 %global with_systemd 1
 %define init_script systemd
+#
+# BuildRequires systemd-units on fedora and rhel
+%if 0%{?fedora} >= 14 || 0%{?rhel} >= 7
 BuildRequires: systemd-units
+#
+# BuildRequires systemd on openSUSE and SUSE
+%endif
+%if 0%{?suse_version} >= 1210
+BuildRequires: systemd
+%endif
 %else
 %global with_systemd 0
 %define init_script sysvinit
