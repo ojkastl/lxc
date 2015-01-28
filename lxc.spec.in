@@ -36,7 +36,7 @@ BuildRequires: systemd-units
 
 # RPM needs alpha/beta/rc in Release: not Version: to ensure smooth
 # package upgrades from alpha->beta->rc->release. For more info see:
-# http://fedoraproject.org/wiki/Packaging%3aNamingGuidelines#NonNumericRelease
+# http://fedoraproject.org/wiki/Packaging:NamingGuidelines#NonNumericRelease
 %if "x@LXC_VERSION_BETA@" != "x"
 %global beta_rel @LXC_VERSION_BETA@
 %global beta_dot .%{beta_rel}
