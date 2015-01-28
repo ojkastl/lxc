@@ -225,6 +225,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %files devel
 %defattr(-,root,root)
 %{_includedir}/%{name}/*
+%dir /usr/include/%{name}
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 
