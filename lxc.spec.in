@@ -141,9 +141,18 @@ PATH=$PATH:/usr/sbin:/sbin %configure $args \
 make %{?_smp_mflags}
 
 %install
+# openSUSE/SUSE
+%if %{defined suse_version}
+%makeinstall
+install -d -m 755 %{buildroot}/var/lib/lxc/
+find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}
+# not openSUSE/SUSE
+%else
 %__rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+%endif
 
 %clean
 %__rm -rf %{buildroot}
@@ -221,12 +230,20 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 
 %if %{with_systemd}
 %{_unitdir}/lxc.service
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_sbindir}/rc%{name}
+%endif
 %else
 %{_sysconfdir}/rc.d/init.d/lxc
 %endif
 
 %files libs
 %defattr(-,root,root)
+# openSUSE/SUSE
+%if %{defined suse_version}
+%exclude %{_sbindir}/rc%{name}
+%endif
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/%{name}
