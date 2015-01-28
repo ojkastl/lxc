@@ -205,7 +205,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_datadir}/doc/*
 %{_datadir}/lxc/*
 %config %{_sysconfdir}/bash_completion.d/%{name}
-%config(noreplace) %{_sysconfdir}/lxc/*
+%config(noreplace) %{_sysconfdir}/%{name}
 
 %if %{with_systemd}
 %{_unitdir}/lxc.service
