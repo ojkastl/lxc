@@ -136,9 +136,19 @@ PATH=$PATH:/usr/sbin:/sbin %configure $args \
 %if %{with_python}
   --enable-python \
 %endif
+%if %{defined suse_version}
+  --disable-examples \
+%endif
   --disable-rpath \
   --with-init-script=%{init_script}
 make %{?_smp_mflags}
+
+# openSUSE/SUSE
+%if %{defined suse_version}
+%__rm -rf .doc
+%__mkdir_p .doc/examples
+%__cp doc/examples/*.conf .doc/examples
+%endif
 
 %install
 # openSUSE/SUSE
@@ -223,7 +233,16 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default-with-nesting
 %config %{_sysconfdir}/apparmor.d/usr.bin.%{name}-start
 
-%{_datadir}/doc/*
+# openSUSE/SUSE
+%if %{defined suse_version}
+%doc AUTHORS MAINTAINERS COPYING README doc/FAQ.txt
+%doc .doc/examples
+%endif
+# not openSUSE/SUSE
+%if %{undefined suse_version}
+%{_docdir}/%{name}
+%endif
+
 %{_datadir}/%{name}
 %config %{_sysconfdir}/bash_completion.d/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}
