@@ -225,6 +225,8 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %if %{with_lua}
 %files lua
 %defattr(-,root,root)
+%{_bindir}/%{name}-top
+%dir %{_libdir}/lua/%{name}/
 %{_datadir}/lua
 %{_libdir}/lua
 %endif
