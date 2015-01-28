@@ -58,6 +58,9 @@ Version: @LXC_VERSION_BASE@
 Release: %{?beta_rel:0.1.%{beta_rel}}%{?!beta_rel:%{norm_rel}}%{?dist}
 URL: http://linuxcontainers.org
 Source: http://linuxcontainers.org/downloads/%{name}-%{version}%{?beta_dot}.tar.gz
+%if %{defined suse_version}
+Source1:        README.SUSE
+%endif
 Summary: Linux Containers userspace tools
 Group: Applications/System
 License: LGPL-2.0+
@@ -145,6 +148,7 @@ make %{?_smp_mflags}
 
 # openSUSE/SUSE
 %if %{defined suse_version}
+%__cp %{SOURCE1} .
 %__rm -rf .doc
 %__mkdir_p .doc/examples
 %__cp doc/examples/*.conf .doc/examples
@@ -236,6 +240,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 # openSUSE/SUSE
 %if %{defined suse_version}
 %doc AUTHORS MAINTAINERS COPYING README doc/FAQ.txt
+%doc README.SUSE
 %doc .doc/examples
 %endif
 # not openSUSE/SUSE
