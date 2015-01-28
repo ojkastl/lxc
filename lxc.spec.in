@@ -64,7 +64,28 @@ License: LGPL-2.0+
 BuildRoot: %{_tmppath}/%{name}-%{version}-build
 Requires: openssl rsync
 Requires: %{name}-libs = %{version}-%{release}
+
+#
+# Package names for Fedora and RHEL
+#
+%if 0%{?fedora} >= 14 || 0%{?rhel} >= 7
 BuildRequires: libcap libcap-devel docbook2X graphviz
+%endif
+
+#
+# Package names for openSUSE and SUSE
+#
+%if %{defined suse_version}
+PreReq:   permissions
+BuildRequires:  graphviz docbook-utils docbook2x libapparmor-devel libcap-devel libxslt linux-glibc-devel lsb-release pkgconfig
+
+#
+# libseccomp-devel only needed on i386/i586/i686 and X86_64
+#
+%ifarch %ix86 x86_64
+BuildRequires:  libseccomp-devel
+%endif
+%endif
 
 %if %{with_python}
 Requires: python3
