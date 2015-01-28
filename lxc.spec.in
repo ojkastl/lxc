@@ -181,12 +181,27 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %files
 %defattr(-,root,root)
 %{_bindir}/%{name}-*
+
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_mandir}/man[^3]/*
+# not openSUSE/SUSE
+%else
+# not RHEL
+%if %{undefined rhel}
+%{_mandir}/man[^3]/*
+%{_mandir}/ja/*
+# RHEL
+%else
 %{_mandir}/man1/lxc*
 %{_mandir}/man5/lxc*
 %{_mandir}/man7/lxc*
 %{_mandir}/ja/man1/lxc*
 %{_mandir}/ja/man5/lxc*
 %{_mandir}/ja/man7/lxc*
+%endif
+%endif
+
 %{_datadir}/doc/*
 %{_datadir}/lxc/*
 %{_sysconfdir}/bash_completion.d
