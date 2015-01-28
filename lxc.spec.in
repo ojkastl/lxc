@@ -205,7 +205,14 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %{_libdir}/%{name}
 %{_localstatedir}/*
 %{_libexecdir}/%{name}
+# openSUSE/SUSE
+%if %{defined suse_version}
+%attr(0111,root,root) %{_libexecdir}/%{name}/lxc-user-nic
+# not openSUSE/SUSE
+%else
 %attr(4111,root,root) %{_libexecdir}/%{name}/lxc-user-nic
+%endif
+
 %if %{with_systemd}
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-devsetup
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-autostart-helper
