@@ -215,7 +215,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %config %{_sysconfdir}/apparmor.d/usr.bin.%{name}-start
 
 %{_datadir}/doc/*
-%{_datadir}/lxc/*
+%{_datadir}/%{name}
 %config %{_sysconfdir}/bash_completion.d/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}
 
