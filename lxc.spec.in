@@ -51,7 +51,7 @@ URL: http://linuxcontainers.org
 Source: http://linuxcontainers.org/downloads/%{name}-%{version}%{?beta_dot}.tar.gz
 Summary: Linux Containers userspace tools
 Group: Applications/System
-License: LGPLv2+
+License: LGPL-2.0+
 BuildRoot: %{_tmppath}/%{name}-%{version}-build
 Requires: openssl rsync
 Requires: %{name}-libs = %{version}-%{release}
