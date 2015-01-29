@@ -60,6 +60,7 @@ URL: http://linuxcontainers.org
 Source: http://linuxcontainers.org/downloads/%{name}-%{version}%{?beta_dot}.tar.gz
 %if %{defined suse_version}
 Source1:        README.SUSE
+Source2:        lxc-createconfig.in
 %endif
 Summary: Linux Containers userspace tools
 Group: Applications/System
@@ -160,6 +161,8 @@ make %{?_smp_mflags}
 %makeinstall
 install -d -m 755 %{buildroot}/var/lib/lxc/
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+./config.status --file=%{buildroot}%{_bindir}/lxc-createconfig:%{S:2}
+chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}
 # not openSUSE/SUSE
 %else
