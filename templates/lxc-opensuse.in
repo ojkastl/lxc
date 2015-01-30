@@ -413,8 +413,25 @@ if grep -q Harlequin /etc/os-release || grep -q Tumbleweed /etc/os-release ; the
 fi
 
 if [ -z "$DISTRO" ]; then
+    echo ""
     echo "No release selected, using openSUSE 13.1"
     DISTRO=13.1
+else
+    echo ""
+    case "$DISTRO" in
+	13.1)
+	    echo "Selected openSUSE 13.1"
+	    ;;
+
+	13.2)
+	    echo "Selected openSUSE 13.2"
+	    ;;
+
+	*)
+	    echo "You have chosen an invalid release, quitting..."
+	    exit 1
+	    ;;
+    esac
 fi
 
 if [ "$(id -u)" != "0" ]; then
