@@ -1306,3 +1306,93 @@ next_loop:
 	free(path);
 	return NULL;
 }
+
+/*
+ * ws points into an array of \0-separate path elements.
+ * ws should be pointing to one of the path elements or
+ * the next \0.  It will return the first character of the
+ * next path element.
+ */
+static char *next_word(char *ws) {
+	while (*ws && *ws != ' ') ws++;
+	while (*ws && *ws == ' ') ws++;
+	return ws;
+}
+
+/*
+ * This is only used during container startup.  So we know we won't race
+ * with anyone else mounting.  Check the last line in /proc/self/mountinfo
+ * to make sure the target is under the container root.
+ */
+static bool ensure_not_symlink(const char *target, const char *croot)
+{
+	FILE *f = fopen("/proc/self/mountinfo", "r");
+	char *line = NULL, *ws = NULL, *we = NULL;
+	size_t len = 0, i;
+	bool ret = false;
+
+	if (!croot || croot[0] == '\0')
+		return true;
+
+	if (!f) {
+		ERROR("Cannot open /proc/self/mountinfo");
+		return false;
+	}
+
+	while (getline(&line, &len, f) != -1) {
+	}
+	fclose(f);
+
+	if (!line)
+		return false;
+	ws = line;
+	for (i = 0; i < 4; i++)
+		ws = next_word(ws);
+	if (!*ws)
+		goto out;
+	we = ws;
+	while (*we && *we != ' ')
+		we++;
+	if (!*we)
+		goto out;
+	*we = '\0';
+
+	/* now make sure that ws starts with croot and ends with rest of target */
+	if (croot && strncmp(ws, croot, strlen(croot)) != 0) {
+		ERROR("Mount onto %s resulted in %s\n", target, ws);
+		goto out;
+	}
+
+	size_t start = croot ? strlen(croot) : 0;
+	if (strcmp(ws + start, target + start) != 0) {
+		ERROR("Mount onto %s resulted in %s\n", target, ws);
+		goto out;
+	}
+
+	ret = true;
+
+out:
+	free(line);
+	return ret;
+}
+/*
+ * Safely mount a path into a container, ensuring that the mount target
+ * is under the container's @rootfs.  (If @rootfs is NULL, then the container
+ * uses the host's /)
+ */
+int safe_mount(const char *src, const char *dest, const char *fstype,
+		unsigned long flags, const void *data, const char *rootfs)
+{
+	int ret;
+	ret = mount(src, dest, fstype, flags, data);
+	if (ret < 0) {
+		SYSERROR("Mount of '%s' onto '%s' failed", src, dest);
+		return ret;
+	}
+	if (!ensure_not_symlink(dest, rootfs)) {
+		ERROR("Mount of '%s' onto '%s' was onto a symlink!", src, dest);
+		umount(dest);
+		return -1;
+	}
+	return 0;
+}

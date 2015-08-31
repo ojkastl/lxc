@@ -791,7 +791,7 @@ static int lxc_mount_auto_mounts(struct lxc_conf *conf, int flags, struct lxc_ha
 			}
 			mflags = add_required_remount_flags(source, destination,
 					default_mounts[i].flags);
-			r = mount(source, destination, default_mounts[i].fstype, mflags, default_mounts[i].options);
+			r = safe_mount(source, destination, default_mounts[i].fstype, mflags, default_mounts[i].options, conf->rootfs.path ? conf->rootfs.mount : NULL);
 			saved_errno = errno;
 			if (r < 0)
 				SYSERROR("error mounting %s on %s flags %lu", source, destination, mflags);
@@ -985,7 +985,8 @@ static int setup_tty(const struct lxc_rootfs *rootfs,
 				return -1;
 			}
 
-			if (mount(pty_info->name, lxcpath, "none", MS_BIND, 0)) {
+			if (safe_mount(pty_info->name, lxcpath, "none", MS_BIND, 0,
+					rootfs->mount)) {
 				WARN("failed to mount '%s'->'%s'",
 				     pty_info->name, path);
 				continue;
@@ -1012,7 +1013,8 @@ static int setup_tty(const struct lxc_rootfs *rootfs,
 					close(ret);
 				}
 			}
-			if (mount(pty_info->name, path, "none", MS_BIND, 0)) {
+			if (safe_mount(pty_info->name, path, "none", MS_BIND, 0,
+					rootfs->mount)) {
 				WARN("failed to mount '%s'->'%s'",
 						pty_info->name, path);
 				continue;
@@ -1438,16 +1440,16 @@ static int mount_autodev(const char *name, char *root, const char *lxcpath)
 			SYSERROR("WARNING: Failed to create symlink '%s'->'%s'", host_path, devtmpfs_path);
 		}
 		DEBUG("Bind mounting %s to %s", devtmpfs_path , path );
-		ret = mount(devtmpfs_path, path, NULL, MS_BIND, 0 );
+		ret = safe_mount(devtmpfs_path, path, NULL, MS_BIND, 0, root );
 	} else {
 		/* Only mount a tmpfs on here if we don't already a mount */
 		if ( ! mount_check_fs( host_path, NULL ) ) {
 			DEBUG("Mounting tmpfs to %s", host_path );
-			ret = mount("none", path, "tmpfs", 0, "size=100000,mode=755");
+			ret = safe_mount("none", path, "tmpfs", 0, "size=100000,mode=755", root);
 		} else {
 			/* This allows someone to manually set up a mount */
 			DEBUG("Bind mounting %s to %s", host_path, path );
-			ret = mount(host_path , path, NULL, MS_BIND, 0 );
+			ret = safe_mount(host_path , path, NULL, MS_BIND, 0, root );
 		}
 	}
 	if (ret) {
@@ -1792,7 +1794,7 @@ static int setup_dev_console(const struct lxc_rootfs *rootfs,
 		return -1;
 	}
 
-	if (mount(console->name, path, "none", MS_BIND, 0)) {
+	if (safe_mount(console->name, path, "none", MS_BIND, 0, rootfs->mount)) {
 		ERROR("failed to mount '%s' on '%s'", console->name, path);
 		return -1;
 	}
@@ -1847,7 +1849,7 @@ static int setup_ttydir_console(const struct lxc_rootfs *rootfs,
 		return 0;
 	}
 
-	if (mount(console->name, lxcpath, "none", MS_BIND, 0)) {
+	if (safe_mount(console->name, lxcpath, "none", MS_BIND, 0, rootfs->mount)) {
 		ERROR("failed to mount '%s' on '%s'", console->name, lxcpath);
 		return -1;
 	}
@@ -1997,13 +1999,13 @@ static char *get_field(char *src, int nfields)
 
 static int mount_entry(const char *fsname, const char *target,
 		       const char *fstype, unsigned long mountflags,
-		       const char *data, int optional)
+		       const char *data, int optional, const char *rootfs)
 {
 #ifdef HAVE_STATVFS
 	struct statvfs sb;
 #endif
 
-	if (mount(fsname, target, fstype, mountflags & ~MS_REMOUNT, data)) {
+	if (safe_mount(fsname, target, fstype, mountflags & ~MS_REMOUNT, data, rootfs)) {
 		if (optional) {
 			INFO("failed to mount '%s' on '%s' (optional): %s", fsname,
 			     target, strerror(errno));
@@ -2134,7 +2136,7 @@ static inline int mount_entry_on_systemfs(struct mntent *mntent)
 	}
 
 	ret = mount_entry(mntent->mnt_fsname, mntent->mnt_dir,
-			  mntent->mnt_type, mntflags, mntdata, optional);
+			  mntent->mnt_type, mntflags, mntdata, optional, NULL);
 
 	free(pathdirname);
 	free(mntdata);
@@ -2221,7 +2223,7 @@ skipabs:
 	}
 
 	ret = mount_entry(mntent->mnt_fsname, path, mntent->mnt_type,
-			  mntflags, mntdata, optional);
+			  mntflags, mntdata, optional, rootfs->mount);
 
 	free(mntdata);
 
@@ -2277,7 +2279,7 @@ static int mount_entry_on_relative_rootfs(struct mntent *mntent,
 	}
 
 	ret = mount_entry(mntent->mnt_fsname, path, mntent->mnt_type,
-			  mntflags, mntdata, optional);
+			  mntflags, mntdata, optional, rootfs);
 
 	free(pathdirname);
 	free(mntdata);
@@ -3943,7 +3945,7 @@ static int do_tmp_proc_mount(const char *rootfs)
 	return 0;
 
 domount:
-	if (mount("proc", path, "proc", 0, NULL))
+	if (safe_mount("proc", path, "proc", 0, NULL, rootfs))
 		return -1;
 	INFO("Mounted /proc in container for security transition");
 	return 1;

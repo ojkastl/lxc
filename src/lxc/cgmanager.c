@@ -1262,7 +1262,7 @@ static bool cgm_bind_dir(const char *root, const char *dirname)
 	}
 
 	/* mount a tmpfs there so we can create subdirs */
-	if (mount("cgroup", cgpath, "tmpfs", 0, "size=10000,mode=755")) {
+	if (safe_mount("cgroup", cgpath, "tmpfs", 0, "size=10000,mode=755", root)) {
 		SYSERROR("Failed to mount tmpfs at %s", cgpath);
 		return false;
 	}
@@ -1273,7 +1273,7 @@ static bool cgm_bind_dir(const char *root, const char *dirname)
 		return false;
 	}
 
-	if (mount(dirname, cgpath, "none", MS_BIND, 0)) {
+	if (safe_mount(dirname, cgpath, "none", MS_BIND, 0, root)) {
 		SYSERROR("Failed to bind mount %s to %s", dirname, cgpath);
 		return false;
 	}
