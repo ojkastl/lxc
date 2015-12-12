@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/python3.4
 #
 # api_test.py: Test/demo of the python3-lxc API
 #
