@@ -68,11 +68,18 @@ Version: @LXC_VERSION_BASE@
 Release: %{?beta_rel:0.1.%{beta_rel}}%{?!beta_rel:%{norm_rel}}%{?dist}
 URL: http://linuxcontainers.org
 Source: http://linuxcontainers.org/downloads/%{name}-%{version}%{?beta_dot}.tar.gz
+%if %{defined suse_version}
+Source1:        README.SUSE
+Source2:        lxc-createconfig.in
+Source3:        openSUSE_apparmor_mount.conf
+%endif
 Summary: Linux Containers userspace tools
 Group: Applications/System
 License: LGPL-2.0+
 BuildRoot: %{_tmppath}/%{name}-%{version}-build
 Requires: openssl rsync dnsmasq bridge-utils
+Requires: apparmor-abstractions >= 2.9
+Requires: apparmor-parser >= 2.9
 Requires: %{name}-libs = %{version}-%{release}
 Requires(pre): /usr/sbin/useradd
 Requires(postun): /usr/sbin/userdel
@@ -116,6 +123,8 @@ manage and debug your containers.
 %package	libs
 Summary:	Shared library files for %{name}
 Group:		System Environment/Libraries
+Requires: apparmor-abstractions >= 2.9
+Requires: apparmor-parser >= 2.9
 %description	libs
 The %{name}-libs package contains libraries for running %{name} applications.
 
@@ -151,19 +160,49 @@ PATH=$PATH:/usr/sbin:/sbin %configure $args \
   --with-systemdsystemunitdir=%{_unitdir} \
 %endif
   %{?_with_runtime_path} \
+%if %{defined suse_version}
+  --disable-examples \
+%endif
   --disable-rpath \
   --with-init-script=%{init_script}
 make %{?_smp_mflags}
 
+# openSUSE/SUSE
+%if %{defined suse_version}
+%__cp %{SOURCE1} .
+%__cp %{SOURCE3} .
+%__rm -rf .doc
+%__mkdir_p .doc/examples
+%__cp doc/examples/*.conf .doc/examples
+%endif
+
 %install
-rm -rf %{buildroot}
+# openSUSE/SUSE
+%if %{defined suse_version}
+%makeinstall
+install -d -m 755 %{buildroot}/var/lib/lxc/
+find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+./config.status --file=%{buildroot}%{_bindir}/lxc-createconfig:%{S:2}
+chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
+mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}
+mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}-net
+%__cp %{SOURCE3} %{buildroot}/usr/share/lxc/config/common.conf.d/
+
+%else
+%__rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+%endif
 
 %clean
-rm -rf %{buildroot}
+%__rm -rf %{buildroot}
 
 %pre
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_add_pre lxc.service
+%service_add_pre lxc-net.service
+%endif
 # Ensure that lxc-dnsmasq uid & gid gets correctly allocated
 if getent passwd lxc-dnsmasq >/dev/null 2>&1 ; then : ; else \
  /usr/sbin/useradd -M -r -s /sbin/nologin \
@@ -172,6 +211,17 @@ if getent passwd lxc-dnsmasq >/dev/null 2>&1 ; then : ; else \
 fi
 
 %post
+# restart apparmor-service on openSUSE/SUSE
+%if %{defined suse_version}
+#restart_on_update boot.apparmor - but non-broken (bnc#853019)
+test -n "$FIRST_ARG" || FIRST_ARG=$1
+if test "$FIRST_ARG" -ge 1 ; then
+    if test "$YAST_IS_RUNNING" != "instsys" -a "$DISABLE_RESTART_ON_UPDATE" != yes ; then
+        test -x /bin/systemctl && /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+        /etc/init.d/boot.apparmor status >/dev/null && /etc/init.d/boot.apparmor reload || :
+    fi
+fi
+%endif
 # This test should trigger a network configure on a new install.
 if [ ! -f %{_sysconfdir}/sysconfig/lxc-net ] || ! grep -q 'USE_LXC_BRIDGE=' %{_sysconfdir}/sysconfig/lxc-net
 then
@@ -217,8 +267,30 @@ LXC_DHCP_MAX="253"
 EOF
 fi
 
+# openSUSE/SUSE
+%if %{defined suse_version}
+/sbin/ldconfig
+%service_add_post lxc.service
+%service_add_post lxc-net.service
+%else
+/sbin/ldconfig
+%endif
+
+%preun
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_del_preun lxc.service
+%service_del_preun lxc-net.service
+%endif
+
 %postun
 /usr/sbin/userdel lxc-dnsmasq > /dev/null 2>&1 || :
+# openSUSE/SUSE
+%if %{defined suse_version}
+/sbin/ldconfig
+%service_del_postun lxc.service
+%service_del_postun lxc-net.service
+%endif
 
 %post   libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
@@ -227,7 +299,10 @@ fi
 %defattr(-,root,root)
 %{_bindir}/*
 # openSUSE/SUSE
-%if 0%{?suse_version} >= 1210
+%if %{defined suse_version}
+%doc AUTHORS MAINTAINERS COPYING README doc/FAQ.txt
+%doc README.SUSE
+%doc .doc/examples
 %dir  %{_sysconfdir}/apparmor.d
 %dir  %{_sysconfdir}/apparmor.d/abstractions
 %dir  %{_sysconfdir}/apparmor.d/abstractions/%{name}
@@ -248,17 +323,47 @@ fi
 %{_mandir}/ja/man1/lxc*
 %{_mandir}/ja/man5/lxc*
 %{_mandir}/ja/man7/lxc*
-%endif
 %{_datadir}/doc/*
+%endif
 %{_datadir}/lxc/*
 %{_sysconfdir}/bash_completion.d
-%{_sysconfdir}/sysconfig/*
-%config(noreplace) %{_sysconfdir}/lxc/*
+
+# not openSUSE/SUSE
+%if %{undefined suse_version}
+%{_docdir}/%{name}
+%endif
+
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_mandir}/man[^3]/*
+# not openSUSE/SUSE
+%else
+%if %{undefined rhel}
+%{_mandir}/man[^3]/*
+%{_mandir}/ja/*
+%endif
+
+%endif
+
+%{_datadir}/%{name}
+%config %{_sysconfdir}/bash_completion.d/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}
+%if %{defined suse_version}
+%if 0%{?suse_version} >= 1310
+%config(noreplace) %{_sysconfdir}/default/%{name}
+%else
 %config(noreplace) %{_sysconfdir}/sysconfig/*
+%endif
+%endif
 
 %if %{with_systemd}
 %{_unitdir}/lxc-net.service
 %{_unitdir}/lxc.service
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_sbindir}/rc%{name}
+%{_sbindir}/rc%{name}-net
+%endif
 %else
 %{_sysconfdir}/rc.d/init.d/lxc
 %{_sysconfdir}/rc.d/init.d/lxc-net
@@ -266,15 +371,23 @@ fi
 
 %files libs
 %defattr(-,root,root)
+%exclude %{_sbindir}/rc%{name}
+%exclude %{_sbindir}/rc%{name}-net
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/%{name}
-%if %{with_python}
-%{_libdir}/python*
+
+# openSUSE/SUSE
+%if %{defined suse_version}
+%attr(0111,root,root) %{_libexecdir}/%{name}/%{name}-user-nic
+# not openSUSE/SUSE
+%else
+%attr(4111,root,root) %{_libexecdir}/%{name}/%{name}-user-nic
 %endif
-%{_localstatedir}/*
+
+%{_localstatedir}/cache/%{name}
+%{_localstatedir}/lib/%{name}
 %{_libexecdir}/%{name}
-%attr(4111,root,root) %{_libexecdir}/%{name}/lxc-user-nic
 %if %{with_systemd}
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-devsetup
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-net
@@ -282,8 +395,15 @@ fi
 %endif
 
 %if %{with_python}
-%{_libdir}/python3.3/site-packages/_lxc*
-%{_libdir}/python3.3/site-packages/lxc/*
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_libdir}/python*
+# not openSUSE/SUSE
+%else
+%{_libdir}/python*
+%{_libdir}/python3.3/site-packages/_%{name}*
+%{_libdir}/python3.3/site-packages/%{name}/*
+%endif
 %endif
 
 %if %{with_lua}
@@ -295,7 +415,7 @@ fi
 
 %files devel
 %defattr(-,root,root)
-%{_includedir}/%{name}/*
+%{_includedir}/%{name}/
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 
