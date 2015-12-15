@@ -1,0 +1,9 @@
+To mount the control group file system just run:
+  /sbin/insserv boot.cgroup
+and /sys/fs/cgroup will be mounted for cgroup automatically.
+
+
+=== lxc-user-nic ===
+If you want to use this tool as a user, set the sticky bit by:
+# chmod u+s /usr/bin/lxc-user-nic
+and update /etc/permissions.local accordingly.
