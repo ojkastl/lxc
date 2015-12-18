@@ -77,6 +77,12 @@ Patch1:         0001-fixing-PKG_CHECK_MODULES-to-work-with-python-3.4-on-.patch
 Patch2:         0002-replaced-she-bangs-containing-usr-bin-python3-with-t.patch
 %endif
 
+# patches backported from master branch
+Patch11:        0011-added-upstream-action-fallback-create-directory-loca.patch
+Patch12:        0012-lxc-opensuse-template-now-understands-release-argume.patch
+Patch13:        0013-lxc-opensuse.in-Added-explanation-on-how-to-use-the-.patch
+Patch14:        0014-lxc-opensuse.in-Check-if-given-argument-is-a-valid-r.patch
+
 Summary: Linux Containers userspace tools
 Group: Applications/System
 License: LGPL-2.0+
@@ -158,6 +164,12 @@ The %{name}-lua package contains %{name} bindings for lua.
 %patch1 -p1
 %patch2 -p1
 %endif
+
+# patches backported from master branch
+%patch11 -p1
+%patch12 -p1
+%patch13 -p1
+%patch14 -p1
 
 %build
 %define _configure ./autogen.sh
