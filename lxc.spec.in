@@ -266,6 +266,8 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %endif
 %endif
 
+# openSUSE/SUSE
+%if %{defined suse_version}
 %dir  %{_sysconfdir}/apparmor.d
 %dir  %{_sysconfdir}/apparmor.d/abstractions
 %dir  %{_sysconfdir}/apparmor.d/abstractions/%{name}
@@ -277,6 +279,7 @@ find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 %config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default-with-mounting
 %config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default-with-nesting
 %config %{_sysconfdir}/apparmor.d/usr.bin.%{name}-start
+%endif
 
 # openSUSE/SUSE
 %if %{defined suse_version}
