@@ -43,6 +43,10 @@ BuildRequires: systemd
 %define init_script sysvinit
 %endif
 
+%if %{defined suse_version}
+%global with_python 1
+%endif
+
 # RPM needs alpha/beta/rc in Release: not Version: to ensure smooth
 # package upgrades from alpha->beta->rc->release. For more info see:
 # http://fedoraproject.org/wiki/Packaging:NamingGuidelines#NonNumericRelease
