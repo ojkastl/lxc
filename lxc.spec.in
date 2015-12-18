@@ -81,7 +81,7 @@ BuildRequires: libcap libcap-devel docbook2X graphviz
 #
 %if %{defined suse_version}
 PreReq:   permissions
-BuildRequires:  graphviz docbook-utils docbook2x libapparmor-devel libcap-devel libxslt linux-glibc-devel lsb-release pkgconfig
+BuildRequires:  graphviz docbook-utils docbook2x libapparmor-devel libcap-devel libxslt linux-glibc-devel lsb-release pkgconfig automake
 
 #
 # libseccomp-devel only needed on i386/i586/i686 and X86_64
@@ -133,6 +133,10 @@ The %{name}-lua package contains %{name} bindings for lua.
 %prep
 %setup -q -n %{name}-%{version}%{?beta_dot}
 %build
+%define _configure ./autogen.sh
+PATH=$PATH:/usr/sbin:/sbin %configure
+
+%define _configure ./configure
 PATH=$PATH:/usr/sbin:/sbin %configure $args \
 %if %{with_lua}
   --enable-lua \
