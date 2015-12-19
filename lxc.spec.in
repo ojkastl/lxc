@@ -354,10 +354,19 @@ fi
 %{_mandir}/ja/man1/lxc*
 %{_mandir}/ja/man5/lxc*
 %{_mandir}/ja/man7/lxc*
-%{_datadir}/doc/*
 %endif
-%{_datadir}/lxc/*
-%{_sysconfdir}/bash_completion.d
+%{_datadir}/%{name}
+%config %{_sysconfdir}/bash_completion.d/%{name}
+%config(noreplace) %{_sysconfdir}/%{name}
+%if %{defined suse_version}
+%if 0%{?suse_version} >= 1310
+%config(noreplace) %{_sysconfdir}/default/%{name}
+%else
+%config(noreplace) %{_sysconfdir}/sysconfig/*
+%endif
+%else
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%endif
 
 # not openSUSE/SUSE
 %if %{undefined suse_version}
@@ -376,16 +385,6 @@ fi
 
 %endif
 
-%{_datadir}/%{name}
-%config %{_sysconfdir}/bash_completion.d/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}
-%if %{defined suse_version}
-%if 0%{?suse_version} >= 1310
-%config(noreplace) %{_sysconfdir}/default/%{name}
-%else
-%config(noreplace) %{_sysconfdir}/sysconfig/*
-%endif
-%endif
 
 %if %{with_systemd}
 %{_unitdir}/lxc-net.service
@@ -418,12 +417,12 @@ fi
 
 %{_localstatedir}/cache/%{name}
 %{_localstatedir}/lib/%{name}
-%{_libexecdir}/%{name}
 %if %{with_systemd}
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-devsetup
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-net
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-containers
 %endif
+%{_libexecdir}/%{name}
 
 %if %{with_python}
 # openSUSE/SUSE
