@@ -1,0 +1,90 @@
+From e7dc06f1f6a0c43cb13f126294a6d5ec53f42daf Mon Sep 17 00:00:00 2001
+From: Johannes Kastl <git@ojkastl.de>
+Date: Sat, 12 Dec 2015 23:00:54 +0100
+Subject: [PATCH] replaced she-bangs containing /usr/bin/python3 with the
+ CentOS 7 path /usr/bin/python3.4
+
+Signed-off-by: Johannes Kastl <git@ojkastl.de>
+---
+ config/apparmor/lxc-generate-aa-rules.py | 2 +-
+ src/lxc/lxc-ls.in                        | 2 +-
+ src/lxc/lxc-start-ephemeral.in           | 2 +-
+ src/python-lxc/examples/api_test.py      | 2 +-
+ src/python-lxc/examples/pyconsole-vte.py | 2 +-
+ src/python-lxc/examples/pyconsole.py     | 2 +-
+ src/python-lxc/setup.py.in               | 2 +-
+ 7 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/config/apparmor/lxc-generate-aa-rules.py b/config/apparmor/lxc-generate-aa-rules.py
+index 683f5fc..7ac23ec 100755
+--- a/config/apparmor/lxc-generate-aa-rules.py
++++ b/config/apparmor/lxc-generate-aa-rules.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ 
+ import sys
+ 
+diff --git a/src/lxc/lxc-ls.in b/src/lxc/lxc-ls.in
+index 280f48b..1cb1b4c 100755
+--- a/src/lxc/lxc-ls.in
++++ b/src/lxc/lxc-ls.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ #
+ # lxc-ls: List containers
+ #
+diff --git a/src/lxc/lxc-start-ephemeral.in b/src/lxc/lxc-start-ephemeral.in
+index e649419..5fba163 100644
+--- a/src/lxc/lxc-start-ephemeral.in
++++ b/src/lxc/lxc-start-ephemeral.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ #
+ # lxc-start-ephemeral: Start a copy of a container using an overlay
+ #
+diff --git a/src/python-lxc/examples/api_test.py b/src/python-lxc/examples/api_test.py
+index 2abbb43..c2d98ba 100755
+--- a/src/python-lxc/examples/api_test.py
++++ b/src/python-lxc/examples/api_test.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ #
+ # api_test.py: Test/demo of the python3-lxc API
+ #
+diff --git a/src/python-lxc/examples/pyconsole-vte.py b/src/python-lxc/examples/pyconsole-vte.py
+index 89c3df7..fd60151 100755
+--- a/src/python-lxc/examples/pyconsole-vte.py
++++ b/src/python-lxc/examples/pyconsole-vte.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ #
+ # pyconsole-vte: Example program showing use of console functions
+ #                in the lxc python binding
+diff --git a/src/python-lxc/examples/pyconsole.py b/src/python-lxc/examples/pyconsole.py
+index d47b00b..8f47f69 100755
+--- a/src/python-lxc/examples/pyconsole.py
++++ b/src/python-lxc/examples/pyconsole.py
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ #
+ # pyconsole: Example program showing use of console functions
+ #            in the lxc python binding
+diff --git a/src/python-lxc/setup.py.in b/src/python-lxc/setup.py.in
+index 3b4b1fe..c1c9dec 100644
+--- a/src/python-lxc/setup.py.in
++++ b/src/python-lxc/setup.py.in
+@@ -1,4 +1,4 @@
+-#!/usr/bin/python3
++#!/usr/bin/python3.4
+ #
+ # python-lxc: Python bindings for LXC
+ #
+-- 
+2.6.4
+

@@ -1,0 +1,37 @@
+From ec4543bd59fa1ac832e71444d4db72db1c10f79e Mon Sep 17 00:00:00 2001
+From: Johannes Kastl <git@ojkastl.de>
+Date: Tue, 8 Dec 2015 11:16:57 +0100
+Subject: [PATCH] fixing PKG_CHECK_MODULES to work with python-3.4 on CentOS_7
+
+Signed-off-by: Johannes Kastl <mail@ojkastl.de>
+---
+ configure.ac | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/configure.ac b/configure.ac
+index ced5d19..a5a0a0c 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -313,7 +313,7 @@ AC_ARG_ENABLE([python],
+ 	[], [enable_python=auto])
+ 
+ if test "x$enable_python" = "xauto"; then
+-	PKG_CHECK_MODULES([PYTHONDEV], [python3 >= 3.2],[enable_python=yes],[enable_python=no])
++	PKG_CHECK_MODULES([PYTHONDEV], [python-3.4 >= 3.2],[enable_python=yes],[enable_python=no])
+ 	if test "$CC" = "clang"; then
+ 		enable_python=no
+ 	fi
+@@ -326,8 +326,8 @@ fi
+ AM_CONDITIONAL([ENABLE_PYTHON], [test "x$enable_python" = "xyes"])
+ 
+ AM_COND_IF([ENABLE_PYTHON],
+-	[AM_PATH_PYTHON([3.2], [], [AC_MSG_ERROR([You must install python3])])
+-	PKG_CHECK_MODULES([PYTHONDEV], [python3 >= 3.2],[],[AC_MSG_ERROR([You must install python3-dev])])
++	[AM_PATH_PYTHON([3.2], [], [AC_MSG_ERROR([You must install python34])])
++	PKG_CHECK_MODULES([PYTHONDEV], [python-3.4 >= 3.2],[],[AC_MSG_ERROR([You must install python34-devel])])
+ 	AC_DEFINE_UNQUOTED([ENABLE_PYTHON], 1, [Python3 is available])])
+ 
+ # Enable dumping stack traces
+-- 
+2.6.3
+
