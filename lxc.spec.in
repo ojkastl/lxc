@@ -23,6 +23,10 @@
 %global with_python %{?_with_python: 1} %{?!_with_python: 0}
 %global with_lua %{?_with_lua: 1} %{?!_with_lua: 0}
 
+%if %{defined suse_version}
+%global with_python 1
+%endif
+
 # Set with_systemd on distros that use it, so we can install the service
 # file, otherwise the sysvinit script will be installed
 %if 0%{?fedora} >= 14 || 0%{?rhel} >= 7 || 0%{?suse_version} >= 1210
