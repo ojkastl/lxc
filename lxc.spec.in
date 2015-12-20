@@ -92,7 +92,7 @@ Requires: libcgroup
 %endif
 # Note for Suse.  The "docbook2X" BuildRequires does properly
 # match docbook2x on Suse in a case insensitive manner
-BuildRequires: libcap libcap-devel docbook2X graphviz libxslt pkgconfig
+BuildRequires: libcap libcap-devel docbook2X graphviz libxslt pkgconfig automake
 
 #
 # Additional packages for openSUSE and SUSE
@@ -163,6 +163,10 @@ The %{name}-lua package contains %{name} bindings for lua.
 %endif
 
 %build
+%define _configure ./autogen.sh
+PATH=$PATH:/usr/sbin:/sbin %configure
+
+%define _configure ./configure
 PATH=$PATH:/usr/sbin:/sbin %configure $args \
 %if %{with_lua}
   --enable-lua \
