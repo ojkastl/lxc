@@ -53,7 +53,10 @@ BuildRequires: systemd
 
 # Must use /var/run for runtime_path on older releases or dnsmasq in the
 # lxc-net script will not be able to write its pid in /run (selinux denial)
-%if 0%{?fedora} < 15 || 0%{?rhel} < 7
+%if %{defined fedora} && 0%{?fedora} < 15
+%define _with_runtime_path --with-runtime-path=/var/run
+%endif
+%if %{defined rhel} && 0%{?rhel} < 7
 %define _with_runtime_path --with-runtime-path=/var/run
 %endif
 
@@ -96,7 +99,10 @@ Requires: apparmor-parser >= 2.9
 Requires: %{name}-libs = %{version}-%{release}
 Requires(pre): /usr/sbin/useradd
 Requires(postun): /usr/sbin/userdel
-%if 0%{?fedora} < 15 || 0%{?rhel} < 7
+%if %{defined fedora} && 0%{?fedora} < 15
+Requires: libcgroup
+%endif
+%if %{defined rhel} && 0%{?rhel} < 7
 Requires: libcgroup
 %endif
 # Note for Suse.  The "docbook2X" BuildRequires does properly
