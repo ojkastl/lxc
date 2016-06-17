@@ -206,7 +206,16 @@ cleanup()
 
 download_debian()
 {
+    case "$release" in
+      squeeze|wheezy)
+        init=sysvinit
+        ;;
+      *)
+        init=init
+        ;;
+    esac
     packages=\
+$init,\
 ifupdown,\
 locales,\
 libui-dialog-perl,\
