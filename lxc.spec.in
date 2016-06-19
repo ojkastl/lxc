@@ -296,6 +296,7 @@ fi
 %config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default
 %config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default-with-mounting
 %config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default-with-nesting
+%config %{_sysconfdir}/apparmor.d/%{name}/%{name}-default-cgns
 %config %{_sysconfdir}/apparmor.d/usr.bin.%{name}-start
 %endif
 %{_mandir}/man1/lxc*
