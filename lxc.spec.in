@@ -25,10 +25,12 @@
 
 %if %{defined suse_version}
 %global with_python 1
+%define path_to_sysconfdir /etc/default/
 %endif
 
 %if 0%{?rhel} >= 7
 %global with_python 1
+%define path_to_sysconfdir /etc/sysconfig/
 %endif
 
 # Set with_systemd on distros that use it, so we can install the service
@@ -270,7 +272,7 @@ if test "$FIRST_ARG" -ge 1 ; then
 fi
 %endif
 # This test should trigger a network configure on a new install.
-if [ ! -f @LXC_DISTRO_SYSCONF@/lxc-net ] || ! grep -q 'USE_LXC_BRIDGE=' @LXC_DISTRO_SYSCONF@/lxc-net
+if [ ! -f %{path_to_sysconfdir}/lxc-net ] || ! grep -q 'USE_LXC_BRIDGE=' %{path_to_sysconfdir}/lxc-net
 then
 	# Grab a random 10net subnet.  Need to add test logic...
 	while [ true ]
@@ -282,7 +284,7 @@ then
 		fi
 	done
 
-	cat >  @LXC_DISTRO_SYSCONF@/lxc-net <<EOF
+	cat >  %{path_to_sysconfdir}/lxc-net <<EOF
 # Leave USE_LXC_BRIDGE as "true" if you want to use lxcbr0 for your
 # containers.  Set to "false" if you'll use virbr0 or another existing
 # bridge, or mavlan to your host's NIC.
