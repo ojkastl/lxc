@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.4
 #
 # python-lxc: Python bindings for LXC
 #
