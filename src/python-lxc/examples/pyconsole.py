@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.4
 # -*- coding: utf-8 -*-
 #
 # pyconsole: Example program showing use of console functions
