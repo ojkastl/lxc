@@ -282,6 +282,9 @@ fi
 %if %{with_systemd}
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-net
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-containers
+%attr(555,root,root) %{_libexecdir}/%{name}/lxc-monitord
+%attr(555,root,root) %{_libexecdir}/%{name}/hooks/unmount-namespace
+%attr(555,root,root) %{_libexecdir}/%{name}/lxc-apparmor-load
 %endif
 
 %if %{with_python}
