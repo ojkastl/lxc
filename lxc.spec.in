@@ -205,6 +205,12 @@ chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 %__rm -rf %{buildroot}
 
 %pre
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_add_pre lxc.service
+%service_add_pre lxc@.service
+%service_add_pre lxc-net.service
+%endif
 # Ensure that lxc-dnsmasq uid & gid gets correctly allocated
 if getent passwd lxc-dnsmasq >/dev/null 2>&1 ; then : ; else \
  /usr/sbin/useradd -M -r -s /sbin/nologin \
@@ -270,8 +276,33 @@ LXC_DHCP_MAX="253"
 EOF
 fi
 
+# openSUSE/SUSE
+%if %{defined suse_version}
+/sbin/ldconfig
+%service_add_post lxc.service
+%service_add_post lxc@.service
+%service_add_post lxc-net.service
+%else
+/sbin/ldconfig
+%endif
+
+%preun
+# openSUSE/SUSE
+%if %{defined suse_version}
+%service_del_preun lxc.service
+%service_del_preun lxc@.service
+%service_del_preun lxc-net.service
+%endif
+
 %postun
 /usr/sbin/userdel lxc-dnsmasq > /dev/null 2>&1 || :
+# openSUSE/SUSE
+%if %{defined suse_version}
+/sbin/ldconfig
+%service_del_postun lxc.service
+%service_del_postun lxc@.service
+%service_del_postun lxc-net.service
+%endif
 
 %post   libs -p /sbin/ldconfig
 %postun libs -p /sbin/ldconfig
