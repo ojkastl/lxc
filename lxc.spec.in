@@ -191,6 +191,8 @@ make %{?_smp_mflags}
 %makeinstall
 install -d -m 755 %{buildroot}/var/lib/lxc/
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}
+mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}-net
 
 %else
 %__rm -rf %{buildroot}
@@ -372,6 +374,11 @@ fi
 %{_unitdir}/lxc-net.service
 %{_unitdir}/lxc.service
 %{_unitdir}/lxc@.service
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_sbindir}/rc%{name}
+%{_sbindir}/rc%{name}-net
+%endif
 %else
 %{_sysconfdir}/rc.d/init.d/lxc
 %{_sysconfdir}/rc.d/init.d/lxc-net
@@ -379,6 +386,10 @@ fi
 
 %files libs
 %defattr(-,root,root)
+%if %{defined suse_version}
+%exclude %{_sbindir}/rc%{name}
+%exclude %{_sbindir}/rc%{name}-net
+%endif
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/%{name}
