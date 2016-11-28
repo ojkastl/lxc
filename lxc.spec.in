@@ -304,7 +304,6 @@ fi
 %{_mandir}/ko/man5/lxc*
 %{_mandir}/ko/man7/lxc*
 %endif
-%{_datadir}/doc/*
 %{_datadir}/%{name}
 %config %{_sysconfdir}/bash_completion.d/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}
