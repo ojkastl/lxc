@@ -305,9 +305,34 @@ fi
 %{_mandir}/ko/man7/lxc*
 %endif
 %{_datadir}/%{name}
+
+# not openSUSE/SUSE
+%if %{undefined suse_version}
+%{_docdir}/%{name}
+%endif
+
+# openSUSE/SUSE
+%if %{defined suse_version}
+%{_mandir}/man[^3]/*
+# not openSUSE/SUSE
+%else
+%if %{undefined rhel}
+%{_mandir}/man[^3]/*
+%{_mandir}/ja/*
+%endif
+%endif
+
 %config %{_sysconfdir}/bash_completion.d/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}
+%if %{defined suse_version}
+%if 0%{?suse_version} >= 1310
+%config(noreplace) %{_sysconfdir}/default/%{name}
+%else
 %config(noreplace) %{_sysconfdir}/sysconfig/*
+%endif
+%else
+%config(noreplace) %{_sysconfdir}/sysconfig/%{name}
+%endif
 
 %if %{with_systemd}
 %{_unitdir}/lxc-net.service
