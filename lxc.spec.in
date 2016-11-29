@@ -73,6 +73,10 @@ Group: Applications/System
 License: LGPL-2.0+
 BuildRoot: %{_tmppath}/%{name}-%{version}-build
 Requires: openssl rsync dnsmasq bridge-utils
+%if 0%{?suse_version} >= 1210
+Requires: apparmor-abstractions >= 2.9
+Requires: apparmor-parser >= 2.9
+%endif
 Requires: %{name}-libs = %{version}-%{release}
 Requires(pre): /usr/sbin/useradd
 Requires(postun): /usr/sbin/userdel
@@ -117,6 +121,10 @@ manage and debug your containers.
 %package	libs
 Summary:	Shared library files for %{name}
 Group:		System Environment/Libraries
+%if 0%{?suse_version} >= 1210
+Requires: apparmor-abstractions >= 2.9
+Requires: apparmor-parser >= 2.9
+%endif
 %description	libs
 The %{name}-libs package contains libraries for running %{name} applications.
 
@@ -173,6 +181,17 @@ if getent passwd lxc-dnsmasq >/dev/null 2>&1 ; then : ; else \
 fi
 
 %post
+# restart apparmor-service on openSUSE/SUSE
+%if %{defined suse_version}
+#restart_on_update boot.apparmor - but non-broken (bnc#853019)
+test -n "$FIRST_ARG" || FIRST_ARG=$1
+if test "$FIRST_ARG" -ge 1 ; then
+    if test "$YAST_IS_RUNNING" != "instsys" -a "$DISABLE_RESTART_ON_UPDATE" != yes ; then
+        test -x /bin/systemctl && /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+        /etc/init.d/boot.apparmor status >/dev/null && /etc/init.d/boot.apparmor reload || :
+    fi
+fi
+%endif
 # This test should trigger a network configure on a new install.
 if [ ! -f @LXC_DISTRO_SYSCONF@/lxc-net ] || ! grep -q 'USE_LXC_BRIDGE=' @LXC_DISTRO_SYSCONF@/lxc-net
 then
