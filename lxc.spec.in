@@ -75,6 +75,7 @@ Source: http://linuxcontainers.org/downloads/%{name}-%{version}%{?beta_dot}.tar.
 Source1:        lxc-createconfig.in
 %if %{defined suse_version}
 Source2:        README.SUSE
+Source3:        openSUSE_apparmor_mount.conf
 %endif
 %if 0%{?rhel} >= 7
 # patch configure.ac to work with python3.4 on CentOS 7
@@ -203,6 +204,7 @@ make %{?_smp_mflags}
 # openSUSE/SUSE
 %if %{defined suse_version}
 %__cp %{SOURCE2} .
+%__cp %{SOURCE3} .
 %__rm -rf .doc
 %__mkdir_p .doc/examples
 %__cp doc/examples/*.conf .doc/examples
@@ -216,6 +218,7 @@ install -d -m 755 %{buildroot}/var/lib/lxc/
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}
 mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}-net
+%__cp %{SOURCE3} %{buildroot}/usr/share/lxc/config/common.conf.d/
 
 %else
 %__rm -rf %{buildroot}
