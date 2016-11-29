@@ -197,6 +197,8 @@ make %{?_smp_mflags}
 %makeinstall
 install -d -m 755 %{buildroot}/var/lib/lxc/
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+./config.status --file=%{buildroot}%{_bindir}/lxc-createconfig:%{S:1}
+chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}
 mkdir -p %{buildroot}/usr/sbin && cd %{buildroot}/usr/sbin && ln -s service rc%{name}-net
 %__cp %{SOURCE3} %{buildroot}/usr/share/lxc/config/common.conf.d/
