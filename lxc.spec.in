@@ -171,16 +171,34 @@ PATH=$PATH:/usr/sbin:/sbin %configure $args \
   --with-systemdsystemunitdir=%{_unitdir} \
 %endif
   %{?_with_runtime_path} \
+%if %{defined suse_version}
+  --disable-examples \
+%endif
   --disable-rpath \
   --with-init-script=%{init_script}
 make %{?_smp_mflags}
 
+# openSUSE/SUSE
+%if %{defined suse_version}
+%__rm -rf .doc
+%__mkdir_p .doc/examples
+%__cp doc/examples/*.conf .doc/examples
+%endif
+
 %install
+# openSUSE/SUSE
+%if %{defined suse_version}
+%makeinstall
+install -d -m 755 %{buildroot}/var/lib/lxc/
+find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
+
+%else
 %__rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
 find %{buildroot} -type f -name '*.la' -exec rm -f {} ';'
 ./config.status --file=%{buildroot}%{_bindir}/lxc-createconfig:%{S:1}
 chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
+%endif
 
 %clean
 %__rm -rf %{buildroot}
@@ -293,6 +311,8 @@ fi
 %{_bindir}/*
 # openSUSE/SUSE
 %if 0%{?suse_version} >= 1210
+%doc AUTHORS MAINTAINERS COPYING README doc/FAQ.txt
+%doc .doc/examples
 %dir  %{_sysconfdir}/apparmor.d
 %dir  %{_sysconfdir}/apparmor.d/abstractions
 %dir  %{_sysconfdir}/apparmor.d/abstractions/%{name}
