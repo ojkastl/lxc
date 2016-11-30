@@ -110,7 +110,7 @@ Requires: libcgroup
 # Note for Suse.  The "docbook2X" BuildRequires does properly
 # match docbook2x on Suse in a case insensitive manner
 %if %{defined suse_version}
-BuildRequires: libcap-devel docbook2X graphviz libxslt pkgconfig automake
+BuildRequires: libcap-devel docbook2X graphviz libxslt pkgconfig automake libtool
 %else
 BuildRequires: libcap libcap-devel docbook2X graphviz libxslt pkgconfig automake
 %endif
