@@ -360,7 +360,7 @@ fi
 %{_libexecdir}/%{name}/hooks/unmount-namespace
 %{_libexecdir}/%{name}/lxc-apparmor-load
 %{_libexecdir}/%{name}/lxc-monitord
-%attr(4111,root,root) %{_libexecdir}/%{name}/lxc-user-nic
+%attr(4111,root,root) %{_libexecdir}/%{name}/%{name}-user-nic
 %if %{with_systemd}
 %{_libexecdir}/%{name}/hooks
 %{_libexecdir}/%{name}
