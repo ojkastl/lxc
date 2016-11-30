@@ -360,7 +360,14 @@ fi
 %{_libexecdir}/%{name}/hooks/unmount-namespace
 %{_libexecdir}/%{name}/lxc-apparmor-load
 %{_libexecdir}/%{name}/lxc-monitord
+
+%if %{defined suse_version}
+# openSUSE/SUSE
+%attr(0111,root,root) %{_libexecdir}/%{name}/%{name}-user-nic
+%else
+# not openSUSE/SUSE
 %attr(4111,root,root) %{_libexecdir}/%{name}/%{name}-user-nic
+%endif
 %if %{with_systemd}
 %{_libexecdir}/%{name}/hooks
 %{_libexecdir}/%{name}
