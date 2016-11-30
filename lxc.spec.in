@@ -138,6 +138,7 @@ BuildRequires:  libseccomp-devel
 %if 0%{?rhel} >= 7
 Requires: python(abi) = 3.4
 BuildRequires: python34-devel
+BuildRequires: python34-setuptools
 %else
 Requires: python3
 BuildRequires: python3-devel
