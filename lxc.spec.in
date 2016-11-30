@@ -436,9 +436,6 @@ fi
 %{_libdir}/%{name}
 %{_localstatedir}/cache/%{name}
 %{_localstatedir}/lib/%{name}
-%{_libexecdir}/%{name}/hooks/unmount-namespace
-%{_libexecdir}/%{name}/lxc-apparmor-load
-%{_libexecdir}/%{name}/lxc-monitord
 
 %if %{defined suse_version}
 # openSUSE/SUSE
