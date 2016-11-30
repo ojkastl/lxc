@@ -450,7 +450,7 @@ fi
 %endif
 
 %if %{with_python}
-%{python3_sitearch}/*
+%{_libdir}/python*
 %endif
 
 %if %{with_lua}
