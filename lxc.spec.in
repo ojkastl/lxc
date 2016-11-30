@@ -27,6 +27,10 @@
 %global with_python 1
 %endif
 
+%if 0%{?rhel} >= 7
+%global with_python 1
+%endif
+
 # Set with_systemd on distros that use it, so we can install the service
 # file, otherwise the sysvinit script will be installed
 %if 0%{?fedora} >= 14 || 0%{?rhel} >= 7 || 0%{?suse_version} >= 1210
@@ -76,6 +80,13 @@ Source1:        lxc-createconfig.in
 Source2:        README.SUSE
 Source3:        openSUSE_apparmor_mount.conf
 %endif
+%if 0%{?rhel} >= 7
+# patch configure.ac to work with python3.4 on CentOS 7
+Patch1:         0001-fixing-PKG_CHECK_MODULES-to-work-with-python-3.4-on-.patch
+# patch all she-bangs containing python3 to python3.4
+Patch2:         0002-replaced-she-bangs-containing-usr-bin-python3-with-t.patch
+%endif
+
 Summary: Linux Containers userspace tools
 Group: Applications/System
 License: LGPL-2.0+
@@ -118,9 +129,14 @@ BuildRequires:  libseccomp-devel
 %endif
 
 %if %{with_python}
+%if 0%{?rhel} >= 7
+Requires: python(abi) = 3.4
+BuildRequires: python34-devel
+%else
 Requires: python3
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+%endif
 %endif
 
 %description
@@ -163,6 +179,13 @@ The %{name}-lua package contains %{name} bindings for lua.
 
 %prep
 %setup -q -n %{name}-%{version}%{?beta_dot}
+
+# CentOS/RHEL
+%if 0%{?rhel} >= 7
+%patch1 -p1
+%patch2 -p1
+%endif
+
 %build
 %define _configure ./autogen.sh
 PATH=$PATH:/usr/sbin:/sbin %configure
@@ -174,6 +197,9 @@ PATH=$PATH:/usr/sbin:/sbin %configure $args \
 %endif
 %if %{with_python}
   --enable-python \
+%if 0%{?rhel} >= 7
+   PYTHON=python3.4 \
+%endif
 %endif
 %if "x%{_unitdir}" != "x"
   --with-systemdsystemunitdir=%{_unitdir} \
