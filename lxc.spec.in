@@ -74,8 +74,14 @@ Source2:        lxc-createconfig.in
 %if 0%{?rhel} >= 7
 # patch configure.ac to work with python3.4 on CentOS 7
 Patch1:         0001-fixing-PKG_CHECK_MODULES-to-work-with-python-3.4-on-.patch
-# patch all she-bangs containing /usr/bin/python3 to /usr/bin/python3.4
-Patch2:         0002-replaced-she-bangs-containing-usr-bin-python3-with-t.patch
+# patch all she-bangs containing python3 to python3.4
+Patch2:         0002-Changed-shebang-in-src-lxc-lxc-device-to-use-python3.patch
+Patch3:         0003-Changed-shebang-in-src-lxc-lxc-ls.in-use-python3.4-i.patch
+Patch4:         0004-Changed-shebang-in-src-lxc-lxc-start-ephemeral.in-us.patch
+Patch5:         0005-Changed-shebang-in-src-python-lxc-setup.py.in-use-py.patch
+Patch6:         0006-Changed-shebang-in-src-python-lxc-examples-pyconsole.patch
+Patch7:         0007-Changed-shebang-in-src-python-lxc-examples-pyconsole.patch
+Patch8:         0008-Changed-shebang-in-src-python-lxc-examples-api_test..patch
 %endif
 
 # patches backported from master branch
@@ -164,6 +170,12 @@ The %{name}-lua package contains %{name} bindings for lua.
 %if 0%{?rhel} >= 7
 %patch1 -p1
 %patch2 -p1
+%patch3 -p1
+%patch4 -p1
+%patch5 -p1
+%patch6 -p1
+%patch7 -p1
+%patch8 -p1
 %endif
 
 # patches backported from master branch
