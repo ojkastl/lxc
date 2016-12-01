@@ -330,6 +330,9 @@ chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 %{_sbindir}/*
 %{_libdir}/*.so.*
 %{_libdir}/%{name}
+%if %{with_python}
+%{_libdir}/python*
+%endif
 %{_localstatedir}/cache/%{name}
 %{_localstatedir}/lib/%{name}
 %dir %{_libexecdir}/%{name}
@@ -346,10 +349,6 @@ chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-devsetup
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-monitord
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-autostart-helper
-%endif
-
-%if %{with_python}
-%{python3_sitearch}/*
 %endif
 
 %if %{with_lua}
