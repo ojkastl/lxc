@@ -332,7 +332,7 @@ chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 %{_libdir}/%{name}
 %{_localstatedir}/cache/%{name}
 %{_localstatedir}/lib/%{name}
-%{_libexecdir}/%{name}
+%dir %{_libexecdir}/%{name}
 
 # openSUSE/SUSE
 %if %{defined suse_version}
@@ -344,6 +344,7 @@ chmod a+x %{buildroot}%{_bindir}/lxc-createconfig
 
 %if %{with_systemd}
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-devsetup
+%attr(555,root,root) %{_libexecdir}/%{name}/lxc-monitord
 %attr(555,root,root) %{_libexecdir}/%{name}/lxc-autostart-helper
 %endif
 
