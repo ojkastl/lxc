@@ -1319,15 +1319,30 @@ static char *next_word(char *ws) {
 	return ws;
 }
 
-/* copy src to dest, collapsing multiple '/' into one */
+/*
+ * copy src to dest, collapsing multiple '/' into one and
+ * collapsing '/./' to '/'
+ */
 static void copy_cleanedup(char *dest, const char *src)
 {
+	char *orig = dest;
 	while (*src) {
-		while (*src == '/' && *(src+1) == '/')
+		if (*src == '/' && *(src+1) == '/') {
 			src++;
+			continue;
+		}
+		if (*src == '/' && *(src+1) == '.' &&
+			(*(src+2) == '/' || *(src+2) == '\0')) {
+			src += 2;
+			continue;
+		}
 		*(dest++) = *(src++);
 	}
 	*dest = '\0';
+	/* remove trailing / */
+	dest--;
+	while (dest > orig && *dest == '/')
+		*(dest--) = '\0';
 }
 
 /*
@@ -1379,7 +1394,7 @@ static bool ensure_not_symlink(const char *target, const char *croot)
 
 	size_t start = croot ? strlen(croot) : 0;
 	if (strcmp(ws + start, tgtcopy + start) != 0) {
-		ERROR("Mount onto %s resulted in %s\n", target, ws);
+		ERROR("Mount onto %s resulted in %s, not %s\n", target, ws, tgtcopy);
 		goto out;
 	}
 
