@@ -26,6 +26,7 @@
 #include <sys/wait.h>
 #include <sys/types.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include "attach.h"
 #include "arguments.h"
@@ -231,6 +232,7 @@ int main(int argc, char *argv[])
 	if (ret < 0)
 		return 1;
 
+	signal(SIGINT, SIG_IGN);
 	ret = lxc_wait_for_pid_status(pid);
 	if (ret < 0)
 		return 1;
