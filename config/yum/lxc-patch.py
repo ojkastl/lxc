@@ -1,3 +1,5 @@
+#!/usr/bin/python
+#
 # Yum plugin to re-patch container rootfs after a yum update is done
 #
 # Copyright (C) 2012 Oracle
