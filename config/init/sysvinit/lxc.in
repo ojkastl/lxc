@@ -92,6 +92,8 @@ wait_for_bridge()
     done
 }
 
+mkdir -p /var/lock/subsys
+
 # See how we were called.
 case "$1" in
   start)
